@@ -3,12 +3,13 @@ package model
 import (
 	"crawlab/database"
 	"crawlab/utils"
-	"github.com/apex/log"
-	"github.com/globalsign/mgo"
-	"github.com/globalsign/mgo/bson"
 	"os"
 	"runtime/debug"
 	"time"
+
+	"github.com/apex/log"
+	"github.com/globalsign/mgo"
+	"github.com/globalsign/mgo/bson"
 )
 
 type LogItem struct {
@@ -118,11 +119,7 @@ func GetLogItemList(query bson.M, keyword string, skip int, limit int, sortStr s
 
 	var logItems []LogItem
 	if keyword == "" {
-		filter["seq"] = bson.M{
-			"$gte": skip,
-			"$lt":  skip + limit,
-		}
-		if err := c.Find(filter).Sort(sortStr).All(&logItems); err != nil {
+		if err := c.Find(filter).Sort(sortStr).Skip(skip).Limit(limit).All(&logItems); err != nil {
 			debug.PrintStack()
 			return logItems, err
 		}
